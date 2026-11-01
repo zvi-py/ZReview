@@ -1,0 +1,8 @@
+{
+  "name": "Remix ZARVIS — AI Media Intelligence \u0026 Approval System",
+  "description": "Multimodal AI media compliance, brand guideline parameter evaluation, explainable scoring, and human approval workflow.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

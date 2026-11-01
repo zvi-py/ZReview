@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="100%" height="100%">
+  <defs>
+    <linearGradient id="novaBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A" />
+      <stop offset="60%" stop-color="#020617" />
+      <stop offset="100%" stop-color="#000000" />
+    </linearGradient>
+    <linearGradient id="novaTeal" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#10B981" />
+      <stop offset="100%" stop-color="#06B6D4" />
+    </linearGradient>
+    <linearGradient id="silverGloss" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="40%" stop-color="#E2E8F0" />
+      <stop offset="100%" stop-color="#64748B" />
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="1000" fill="url(#novaBg)" />
+
+  <!-- Speed Streamlines -->
+  <g opacity="0.15" stroke="url(#novaTeal)" stroke-width="2">
+    <path d="M -100,350 C 200,350 400,280 900,280" />
+    <path d="M -100,420 C 200,420 500,360 900,360" />
+    <path d="M -100,500 C 200,500 450,440 900,440" />
+  </g>
+
+  <!-- Nova Brand Mark -->
+  <g transform="translate(60, 60)">
+    <circle cx="20" cy="20" r="18" fill="none" stroke="url(#novaTeal)" stroke-width="3" />
+    <circle cx="20" cy="20" r="6" fill="#10B981" />
+    <text x="52" y="27" font-family="'Plus Jakarta Sans', sans-serif" font-weight="900" font-size="26" fill="#FFFFFF" letter-spacing="1">NOVA</text>
+    <text x="52" y="42" font-family="'Space Grotesk', monospace" font-size="10" fill="#06B6D4" letter-spacing="3">MOBILITY LABS</text>
+  </g>
+
+  <!-- Tagline -->
+  <g transform="translate(60, 200)">
+    <text x="0" y="24" font-family="'Space Grotesk', monospace" font-size="13" font-weight="700" fill="#10B981" letter-spacing="3">ALL-ELECTRIC AUTONOMOUS GT</text>
+    <text x="0" y="85" font-family="'Plus Jakarta Sans', sans-serif" font-weight="900" font-size="62" fill="url(#silverGloss)" letter-spacing="-1.5">Apex Gran Turismo</text>
+    <text x="0" y="135" font-family="'Plus Jakarta Sans', sans-serif" font-weight="400" font-size="18" fill="#94A3B8">
+      840-mile solid-state battery range with Level 4 autonomous highway pilot.
+    </text>
+  </g>
+
+  <!-- Stylized Sleek EV Silhouette -->
+  <g transform="translate(100, 420)">
+    <ellipse cx="300" cy="180" rx="280" ry="16" fill="#06B6D4" opacity="0.2" filter="blur(15px)" />
+    <!-- Chassis Contour -->
+    <path d="M 40,160 C 80,120 180,90 280,75 C 380,60 480,85 540,140 C 560,160 550,170 510,170 L 60,170 Z" fill="#1E293B" stroke="url(#novaTeal)" stroke-width="2" />
+    <!-- Cockpit Canopy -->
+    <path d="M 180,95 C 240,75 340,75 420,105 C 440,115 410,135 370,135 L 190,135 Z" fill="#020617" stroke="#38BDF8" stroke-width="1.5" />
+    <!-- Headlight Beam -->
+    <line x1="535" y1="145" x2="680" y2="155" stroke="#38BDF8" stroke-width="3" opacity="0.8" />
+  </g>
+
+  <!-- Specs Badges -->
+  <g transform="translate(60, 740)">
+    <g transform="translate(0, 0)">
+      <text x="0" y="28" font-family="'Space Grotesk', monospace" font-weight="800" font-size="34" fill="#FFFFFF">1.88s</text>
+      <text x="0" y="48" font-family="'Plus Jakarta Sans', sans-serif" font-size="12" fill="#64748B">0-60 MPH Acceleration</text>
+    </g>
+    <g transform="translate(240, 0)">
+      <text x="0" y="28" font-family="'Space Grotesk', monospace" font-weight="800" font-size="34" fill="#10B981">840 Mi</text>
+      <text x="0" y="48" font-family="'Plus Jakarta Sans', sans-serif" font-size="12" fill="#64748B">Solid-State Range</text>
+    </g>
+    <g transform="translate(480, 0)">
+      <text x="0" y="28" font-family="'Space Grotesk', monospace" font-weight="800" font-size="34" fill="#06B6D4">800V</text>
+      <text x="0" y="48" font-family="'Plus Jakarta Sans', sans-serif" font-size="12" fill="#64748B">Ultra-Fast 12-Min Charge</text>
+    </g>
+  </g>
+
+  <!-- Bottom Strip -->
+  <g transform="translate(60, 880)">
+    <rect width="680" height="66" rx="18" fill="#0F172A" stroke="#1E293B" stroke-width="1.5" />
+    <g transform="translate(470, 11)">
+      <rect width="190" height="44" rx="14" fill="url(#novaTeal)" />
+      <text x="95" y="27" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="14" text-anchor="middle" fill="#020617">Reserve Edition 01</text>
+    </g>
+    <text x="24" y="28" font-family="'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="700" fill="#FFFFFF">Nova Mobility Headquarters • Stuttgart &amp; Palo Alto</text>
+    <text x="24" y="48" font-family="'Space Grotesk', monospace" font-size="12" fill="#10B981">novamobility.tech | Concierge: +1 (888) 720-NOVA</text>
+  </g>
+</svg>

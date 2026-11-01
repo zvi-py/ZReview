@@ -1,0 +1,263 @@
+@import "tailwindcss";
+
+@theme {
+  --font-syne: 'Fraunces', serif;
+  --font-serif: 'Fraunces', serif;
+  --font-space: 'Space Grotesk', monospace;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Strawberry Matcha Signature Theme Colors */
+  --color-santiago: #2E5629;
+  --color-santiago-hover: #22421E;
+  --color-santiago-light: #EBF5E9;
+  --color-santiago-muted: rgba(46, 86, 41, 0.12);
+
+  --color-matcha: #2E5629;
+  --color-matcha-dark: #1E3B1B;
+  --color-matcha-light: #EBF5E9;
+  --color-matcha-border: #BED8B9;
+  --color-matcha-muted: rgba(46, 86, 41, 0.12);
+
+  --color-strawberry: #FF5E97;
+  --color-strawberry-hover: #E8457F;
+  --color-strawberry-light: #FFF0F5;
+  --color-strawberry-border: #FFD0E0;
+  --color-strawberry-muted: rgba(255, 94, 151, 0.14);
+
+  --color-cream: #FAF7EE;
+  --color-cream-soft: #F4EFE2;
+  --color-cream-card: #FFFFFF;
+  --color-cream-border: #E8E3D5;
+
+  --color-coldfoam: #FAF7EE;
+  --color-coldfoam-light: #ffffff;
+  --color-coldfoam-dark: #F3EFE4;
+
+  --color-obsidian: #182817;
+  --color-obsidian-surface: #20331F;
+  --color-obsidian-elevated: #283F27;
+  --color-obsidian-border: #3A5538;
+
+  --color-goldblack: #1E281C;
+  --color-goldblack-surface: #273625;
+  --color-goldblack-muted: #5A6D58;
+
+  --color-landmark: #677A65;
+  --color-landmark-light: #8E9F8C;
+  --color-landmark-muted: rgba(103, 122, 101, 0.2);
+}
+
+:root {
+  --santiago: #2E5629;
+  --matcha: #2E5629;
+  --strawberry: #FF5E97;
+  --cream: #FAF7EE;
+  --coldfoam: #FAF7EE;
+  --obsidian: #182817;
+  --goldblack: #1E281C;
+  --landmark: #677A65;
+}
+
+body {
+  background-color: #FAF7EE;
+  color: #182817;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  overflow-x: hidden;
+}
+
+.font-syne {
+  font-family: 'Fraunces', serif;
+  letter-spacing: -0.015em;
+}
+
+.font-display {
+  font-family: 'Fraunces', serif;
+  letter-spacing: -0.02em;
+}
+
+.font-space {
+  font-family: 'Space Grotesk', monospace;
+}
+
+/* Glassmorphism primitives tuned for warm cream & matcha surfaces */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(232, 227, 213, 0.9);
+  box-shadow: 0 16px 40px rgba(46, 86, 41, 0.05);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(232, 227, 213, 0.85);
+  box-shadow: 0 10px 30px rgba(46, 86, 41, 0.04);
+}
+
+.glass-pill {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(232, 227, 213, 0.95);
+  box-shadow: 0 4px 14px rgba(46, 86, 41, 0.03);
+}
+
+.glass-frost {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  box-shadow: 0 20px 60px -15px rgba(30, 59, 27, 0.1);
+}
+
+/* 3D Glossy Matcha & Strawberry Cream Floating Spheres */
+.matcha-orb-primary {
+  background: radial-gradient(circle at 32% 28%, #ffffff 0%, #e0f2dc 14%, #7bb372 45%, #3a6b33 74%, #1e3d1b 100%);
+  box-shadow: 
+    0 25px 60px -10px rgba(46, 86, 41, 0.28),
+    inset -10px -10px 24px rgba(20, 48, 17, 0.35),
+    inset 7px 7px 15px rgba(255, 255, 255, 0.8);
+}
+
+.strawberry-orb-primary {
+  background: radial-gradient(circle at 32% 28%, #ffffff 0%, #ffe8f1 14%, #ffa3c5 46%, #ff5e97 76%, #c92461 100%);
+  box-shadow: 
+    0 25px 55px -10px rgba(255, 94, 151, 0.26),
+    inset -10px -10px 24px rgba(160, 20, 68, 0.35),
+    inset 7px 7px 15px rgba(255, 255, 255, 0.85);
+}
+
+.matcha-orb-secondary {
+  background: radial-gradient(circle at 32% 28%, #ffffff 0%, #eaf5e8 12%, #99c792 44%, #477b3f 75%, #254b21 100%);
+  box-shadow: 
+    0 20px 45px -8px rgba(46, 86, 41, 0.22),
+    inset -8px -8px 18px rgba(20, 48, 17, 0.3),
+    inset 6px 6px 12px rgba(255, 255, 255, 0.75);
+}
+
+.strawberry-orb-secondary {
+  background: radial-gradient(circle at 32% 28%, #ffffff 0%, #fff0f5 12%, #ffb8d2 45%, #ff70a3 76%, #d83472 100%);
+  box-shadow: 
+    0 20px 45px -8px rgba(255, 94, 151, 0.2),
+    inset -8px -8px 18px rgba(160, 20, 68, 0.3),
+    inset 6px 6px 12px rgba(255, 255, 255, 0.75);
+}
+
+.matcha-torus-ring {
+  filter: drop-shadow(0 20px 35px rgba(46, 86, 41, 0.22));
+}
+
+.strawberry-torus-ring {
+  filter: drop-shadow(0 20px 35px rgba(255, 94, 151, 0.22));
+}
+
+/* Backward compatibility aliases */
+.orange-orb-primary {
+  composes: matcha-orb-primary;
+  background: radial-gradient(circle at 32% 28%, #ffffff 0%, #e0f2dc 14%, #7bb372 45%, #3a6b33 74%, #1e3d1b 100%);
+  box-shadow: 0 25px 60px -10px rgba(46, 86, 41, 0.28);
+}
+.orange-orb-secondary {
+  composes: strawberry-orb-primary;
+  background: radial-gradient(circle at 32% 28%, #ffffff 0%, #ffe8f1 14%, #ffa3c5 46%, #ff5e97 76%, #c92461 100%);
+  box-shadow: 0 25px 55px -10px rgba(255, 94, 151, 0.26);
+}
+.orange-torus-ring {
+  filter: drop-shadow(0 20px 35px rgba(46, 86, 41, 0.22));
+}
+
+/* Smooth continuous floating animations */
+@keyframes orbFloatPrimary {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(-16px, -24px, 0) scale(1.02);
+  }
+  66% {
+    transform: translate3d(14px, -10px, 0) scale(0.98);
+  }
+}
+
+@keyframes orbFloatSecondary {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(16px, -20px, 0) scale(0.98);
+  }
+  66% {
+    transform: translate3d(-12px, -26px, 0) scale(1.02);
+  }
+}
+
+@keyframes orbFloatSmall {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-8px, 18px, 0) scale(1.04);
+  }
+}
+
+@keyframes torusDrift1 {
+  0%, 100% {
+    transform: rotate(14deg) translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: rotate(26deg) translate3d(-14px, -18px, 0) scale(1.02);
+  }
+}
+
+@keyframes torusDrift2 {
+  0%, 100% {
+    transform: rotate(-18deg) translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: rotate(-30deg) translate3d(12px, 14px, 0) scale(0.98);
+  }
+}
+
+.animate-float-primary {
+  animation: orbFloatPrimary 12s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  will-change: transform;
+}
+
+.animate-float-secondary {
+  animation: orbFloatSecondary 14s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  will-change: transform;
+}
+
+.animate-float-small {
+  animation: orbFloatSmall 9s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  will-change: transform;
+}
+
+.animate-torus-drift-1 {
+  animation: torusDrift1 16s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  will-change: transform;
+}
+
+.animate-torus-drift-2 {
+  animation: torusDrift2 18s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  will-change: transform;
+}
+
+/* Custom crisp hairline scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(46, 86, 41, 0.2);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(46, 86, 41, 0.5);
+}

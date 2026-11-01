@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="100%" height="100%">
+  <!-- Same canvas with low contrast CTA and clipped bottom margin -->
+  <rect width="800" height="1000" fill="#050814" />
+  
+  <g transform="translate(60, 60)">
+    <rect width="44" height="44" rx="12" fill="#3B82F6" />
+    <text x="60" y="32" font-family="Arial, sans-serif" font-weight="900" font-size="24" fill="#E2E8F0">APEX GLOBAL (Draft)</text>
+  </g>
+
+  <g transform="translate(60, 240)">
+    <text x="0" y="90" font-family="Arial, sans-serif" font-weight="900" font-size="64" fill="#FFFFFF">Sovereign AI</text>
+    <text x="0" y="160" font-family="Arial, sans-serif" font-weight="900" font-size="64" fill="#60A5FA">&amp; Superclusters</text>
+  </g>
+
+  <!-- Problem: Red prohibited accent color used & CTA touches bottom edge (< 2% margin) -->
+  <g transform="translate(60, 960)">
+    <rect width="680" height="35" fill="#EF4444" />
+    <text x="340" y="24" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#7F1D1D">
+      Contact: apex.tech (Missing official helpline phone &amp; safe zone violation)
+    </text>
+  </g>
+</svg>

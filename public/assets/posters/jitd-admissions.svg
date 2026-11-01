@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="100%" height="100%">
+  <defs>
+    <linearGradient id="jitdBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A" />
+      <stop offset="60%" stop-color="#1E293B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="1000" fill="url(#jitdBg)" />
+  <image href="https://images.unsplash.com/photo-1562774053-701939374585?q=80&amp;w=1200&amp;auto=format&amp;fit=crop" x="0" y="0" width="800" height="420" preserveAspectRatio="xMidYMid slice" opacity="0.35" />
+
+  <!-- JITD Crest -->
+  <g transform="translate(50, 45)">
+    <rect width="48" height="48" rx="10" fill="#2563EB" />
+    <text x="24" y="32" font-family="'Plus Jakarta Sans', sans-serif" font-weight="900" font-size="20" fill="#FFFFFF" text-anchor="middle">JIT</text>
+    <text x="62" y="26" font-family="'Plus Jakarta Sans', sans-serif" font-weight="900" font-size="20" fill="#FFFFFF">JAIN INSTITUTE OF TECHNOLOGY</text>
+    <text x="62" y="42" font-family="'Space Grotesk', monospace" font-size="10" font-weight="700" fill="#38BDF8">DAVANGERE • AFFILIATED TO VTU, BELAGAVI</text>
+  </g>
+
+  <!-- Accreditation Seals -->
+  <g transform="translate(630, 45)">
+    <rect width="120" height="44" rx="10" fill="#1E293B" stroke="#38BDF8" stroke-width="1.5" />
+    <text x="60" y="20" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="12" fill="#38BDF8" text-anchor="middle">NAAC A+</text>
+    <text x="60" y="34" font-family="'Space Grotesk', monospace" font-size="9" fill="#94A3B8" text-anchor="middle">NBA ACCREDITED</text>
+  </g>
+
+  <!-- Title -->
+  <g transform="translate(50, 160)">
+    <rect x="0" y="0" width="220" height="26" rx="6" fill="#2563EB" />
+    <text x="12" y="18" font-family="'Space Grotesk', monospace" font-size="12" font-weight="900" fill="#FFFFFF">ADMISSIONS OPEN 2026-27</text>
+    <text x="0" y="85" font-family="'Plus Jakarta Sans', sans-serif" font-weight="900" font-size="52" fill="#FFFFFF" letter-spacing="-1.5">Build Your Future</text>
+    <text x="0" y="145" font-family="'Plus Jakarta Sans', sans-serif" font-weight="900" font-size="52" fill="#38BDF8" letter-spacing="-1.5">At JIT Davangere</text>
+  </g>
+
+  <!-- Courses Grid -->
+  <g transform="translate(50, 360)">
+    <rect width="700" height="360" rx="20" fill="#1E293B" stroke="#334155" stroke-width="1.5" />
+    
+    <g transform="translate(30, 30)">
+      <text x="0" y="20" font-family="'Plus Jakarta Sans', sans-serif" font-weight="900" font-size="22" fill="#FFFFFF">Engineering &amp; Tech Specializations</text>
+
+      <g transform="translate(0, 45)">
+        <rect x="0" y="0" width="310" height="60" rx="12" fill="#0F172A" />
+        <text x="20" y="28" font-family="'Plus Jakarta Sans', sans-serif" font-size="13" font-weight="800" fill="#FFFFFF">Computer Science &amp; Engineering</text>
+        <text x="20" y="46" font-family="'Space Grotesk', monospace" font-size="11" fill="#38BDF8">AI, Machine Learning &amp; Cloud</text>
+
+        <rect x="330" y="0" width="310" height="60" rx="12" fill="#0F172A" />
+        <text x="350" y="28" font-family="'Plus Jakarta Sans', sans-serif" font-size="13" font-weight="800" fill="#FFFFFF">Electronics &amp; Communication</text>
+        <text x="350" y="46" font-family="'Space Grotesk', monospace" font-size="11" fill="#38BDF8">VLSI Design, Robotics &amp; IoT</text>
+
+        <rect x="0" y="75" width="310" height="60" rx="12" fill="#0F172A" />
+        <text x="20" y="103" font-family="'Plus Jakarta Sans', sans-serif" font-size="13" font-weight="800" fill="#FFFFFF">Data Science &amp; Cyber Security</text>
+        <text x="20" y="121" font-family="'Space Grotesk', monospace" font-size="11" fill="#38BDF8">Enterprise Defense &amp; Big Data</text>
+
+        <rect x="330" y="75" width="310" height="60" rx="12" fill="#0F172A" />
+        <text x="350" y="103" font-family="'Plus Jakarta Sans', sans-serif" font-size="13" font-weight="800" fill="#FFFFFF">Mechanical &amp; Civil Engineering</text>
+        <text x="350" y="121" font-family="'Space Grotesk', monospace" font-size="11" fill="#38BDF8">Smart Infrastructure &amp; Automation</text>
+      </g>
+    </g>
+
+    <!-- Placement Record -->
+    <g transform="translate(30, 230)">
+      <rect width="640" height="95" rx="14" fill="#0F172A" stroke="#2563EB" stroke-width="1.2" />
+      <g transform="translate(30, 25)">
+        <text x="0" y="24" font-family="'Space Grotesk', monospace" font-size="28" font-weight="900" fill="#38BDF8">75+</text>
+        <text x="0" y="42" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" fill="#94A3B8">Industry Collaborations</text>
+      </g>
+      <g transform="translate(220, 25)">
+        <text x="0" y="24" font-family="'Space Grotesk', monospace" font-size="28" font-weight="900" fill="#FFFFFF">122+</text>
+        <text x="0" y="42" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" fill="#94A3B8">Recruiting Companies</text>
+      </g>
+      <g transform="translate(420, 25)">
+        <text x="0" y="24" font-family="'Space Grotesk', monospace" font-size="28" font-weight="900" fill="#F59E0B">100%</text>
+        <text x="0" y="42" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" fill="#94A3B8">Placement Assistance</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Bottom CTA -->
+  <g transform="translate(50, 860)">
+    <rect width="700" height="85" rx="18" fill="#1E293B" stroke="#2563EB" stroke-width="1.5" />
+    <g transform="translate(480, 18)">
+      <rect width="195" height="48" rx="14" fill="#2563EB" />
+      <text x="97" y="29" font-family="'Plus Jakarta Sans', sans-serif" font-weight="900" font-size="14" text-anchor="middle" fill="#FFFFFF">Inquire / Enroll</text>
+    </g>
+    <g transform="translate(24, 25)">
+      <text x="0" y="16" font-family="'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="700" fill="#FFFFFF">JIT Campus, Avaragere, Davangere, Karnataka</text>
+      <text x="0" y="38" font-family="'Space Grotesk', monospace" font-size="12" fill="#38BDF8">Helpline: +91 8192-297701 • admissions@jitd.in</text>
+    </g>
+  </g>
+</svg>
