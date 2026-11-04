@@ -19,7 +19,7 @@ import {
   getSessionUser,
   destroySession,
 } from './server/db.ts';
-import { runMultimodalAnalysis, detectBrandFromCreative, chatWithComplianceAssistant } from './server/aiService.ts';
+import { runMultimodalAnalysis, detectBrandFromCreative, chatWithComplianceAssistant, getGeminiApiKey } from './server/aiService.ts';
 import { resolveAndExtractCanva } from './server/canvaService.ts';
 import { archiveApprovedProjectToDrive } from './server/driveArchiveService.ts';
 import { saveMediaFile, resolveFileBuffer, verifyMediaFile } from './server/storageService.ts';
@@ -102,6 +102,95 @@ async function startServer() {
   // Health check
   app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', time: new Date().toISOString() });
+  });
+
+  // Demo Narrative Audio / Tour Script endpoint
+  app.get('/api/demo/narrative-audio', async (req, res) => {
+    const tourScript = [
+      {
+        step: 1,
+        title: "Welcome to ZReview",
+        text: "Welcome to ZReview, the enterprise multimodal AI compliance and creative approval system.",
+        durationMs: 4500,
+      },
+      {
+        step: 2,
+        title: "Multimodal Vision Pre-Flight",
+        text: "When a creator uploads a poster, our vision model audits the creative against brand guidelines in under 2.4 seconds.",
+        durationMs: 5000,
+      },
+      {
+        step: 3,
+        title: "85% Approval Gate",
+        text: "Creatives scoring 85% or higher pass the AI gate and advance to the supervisor queue for human sign-off.",
+        durationMs: 5000,
+      },
+      {
+        step: 4,
+        title: "Explainable Feedback & Rework",
+        text: "Any asset scoring below 85% receives explainable parameter diagnostics and instant rework recommendations.",
+        durationMs: 5000,
+      },
+      {
+        step: 5,
+        title: "Human Sign-off & Delivery",
+        text: "Review leads approve client-ready packages, ensuring pristine visual standards across all campaigns.",
+        durationMs: 4500,
+      },
+    ];
+
+    const apiKey = getGeminiApiKey();
+    if (apiKey) {
+      try {
+        const { GoogleGenAI } = await import('@google/genai');
+        const ai = new GoogleGenAI({
+          apiKey,
+          httpOptions: { headers: { 'User-Agent': 'aistudio-build' } },
+        });
+
+        const fullText = tourScript.map((s) => s.text).join(' ');
+        const ttsResponse = await ai.models.generateContent({
+          model: 'gemini-3.8-flash-lite-tts',
+          contents: [
+            {
+              role: 'user',
+              parts: [
+                {
+                  text: fullText,
+                  speechMetadata: {
+                    style: 'Clear, engaging, articulate tech product tour guide',
+                  },
+                },
+              ],
+            },
+          ] as any,
+          config: {
+            responseModalities: ['AUDIO'],
+            speechConfig: {
+              voiceConfig: {
+                prebuiltVoiceConfig: { voiceName: 'Kore' },
+              },
+            },
+          },
+        });
+
+        const base64Audio = ttsResponse.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+        if (base64Audio) {
+          return res.json({
+            audioBase64: base64Audio,
+            mimeType: 'audio/wav',
+            tourScript,
+          });
+        }
+      } catch (err) {
+        console.warn('Gemini TTS audio generation fallback to browser speech synthesis:', err);
+      }
+    }
+
+    return res.json({
+      audioBase64: null,
+      tourScript,
+    });
   });
 
   // 1. Auth & Users

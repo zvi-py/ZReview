@@ -89,8 +89,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
       {/* Top Application Header */}
       <header className="relative z-20 flex h-18 w-full items-center justify-between border-b border-[#E8E3D5] bg-[#FAF7EE]/90 backdrop-blur-xl px-5 sm:px-8 shadow-2xs">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-[#2E5629] to-[#4D8545] text-white shadow-xs ring-1 ring-[#BED8B9]/60">
-            <BrandLogo size={20} variant="white" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/90 backdrop-blur-md shadow-xs ring-1 ring-[#FFD0E0]/80 p-0.5">
+            <BrandLogo size={32} />
           </div>
           <div>
             <span className="font-extrabold tracking-tight text-[#182817] text-lg font-syne leading-none block">

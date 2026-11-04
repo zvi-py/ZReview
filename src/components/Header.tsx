@@ -75,8 +75,8 @@ export const Header: React.FC<HeaderProps> = ({
           onClick={() => setActiveTab('showcase')}
           className="flex items-center gap-2.5 cursor-pointer group text-left shrink-0"
         >
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-tr from-[#2E5629] to-[#4D8545] text-white shadow-xs ring-1 ring-[#BED8B9]/60">
-            <BrandLogo size={18} variant="white" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/90 backdrop-blur-md shadow-xs ring-1 ring-[#FFD0E0]/80 p-0.5">
+            <BrandLogo size={28} />
           </div>
           <div>
             <div className="flex items-center gap-2">

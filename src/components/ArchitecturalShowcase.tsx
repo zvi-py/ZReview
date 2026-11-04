@@ -46,6 +46,17 @@ export const ArchitecturalShowcase: React.FC<ArchitecturalShowcaseProps> = ({
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [isFixedCard, setIsFixedCard] = useState(false);
 
+  // Main page video loop ref (continuous high-definition video playing on loop at 0.95x speed)
+  const cafeVideoRef = React.useRef<HTMLVideoElement>(null);
+
+  // Ensure cafe video autoplays on loop with 0.95x playback rate (5% decreased speed)
+  useEffect(() => {
+    if (cafeVideoRef.current) {
+      cafeVideoRef.current.playbackRate = 0.95;
+      cafeVideoRef.current.play().catch(() => {});
+    }
+  }, []);
+
   // Filtered submissions
   const activeSubmissions = submissions.filter((s) => {
     if (selectedBrandFilter === 'ALL') return true;
@@ -148,19 +159,21 @@ export const ArchitecturalShowcase: React.FC<ArchitecturalShowcaseProps> = ({
       <Floating3DBackground />
 
       {/* =========================================================================
-          FROSTED GLASS TRANSPARENT SHOWCASE CONTAINER
-          Constrained tightly to ensure it NEVER overflows the viewport frame
+          PALPABLE FROSTED GLASS SHOWCASE CONTAINER (Ruang Edit style)
+          Crisp specular white bevels, deep 3D acrylic drop-shadow, backdrop blur
           ========================================================================= */}
-      <main className="relative z-10 mx-auto w-full max-w-5xl xl:max-w-6xl flex-1 min-h-0 rounded-[24px] sm:rounded-[32px] overflow-hidden bg-white/45 backdrop-blur-2xl border border-white/80 shadow-[0_20px_50px_-15px_rgba(255,140,175,0.2)] flex flex-col justify-between p-3 sm:p-4 lg:p-5">
+      <main className="relative z-10 mx-auto w-full max-w-5xl xl:max-w-6xl flex-1 min-h-0 rounded-[28px] sm:rounded-[36px] overflow-hidden bg-gradient-to-b from-white/60 via-white/35 to-white/45 backdrop-blur-3xl backdrop-saturate-150 border border-white/90 shadow-[0_30px_70px_-15px_rgba(255,140,175,0.22),inset_0_2px_3px_rgba(255,255,255,0.95),inset_0_-2px_3px_rgba(255,255,255,0.4)] flex flex-col justify-between p-3 sm:p-4 lg:p-5">
+        {/* Specular Diagonal Glass Sheen Reflection */}
+        <div className="pointer-events-none absolute -top-32 -left-32 w-[160%] h-48 bg-gradient-to-b from-white/35 via-white/10 to-transparent rotate-[-22deg] blur-xs" />
         
         {/* ---------------------------------------------------------------------
             GLASS TOP BAR (Compact, cleanly spaced)
             --------------------------------------------------------------------- */}
-        <header className="relative z-20 flex items-center justify-between gap-2 pb-2.5 border-b border-white/50 shrink-0">
-          {/* Brand Mark Pill */}
+        <header className="relative z-20 flex items-center justify-between gap-2 pb-2.5 border-b border-white/60 shrink-0">
+          {/* Brand Mark Pill with Pink Dot */}
           <div className="flex items-center gap-2">
-            <span className="rounded-full bg-white/75 backdrop-blur-md px-3 py-0.5 text-[11px] font-space font-semibold uppercase tracking-wider text-[#2E5629] border border-white/90 shadow-xs flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-[#2E5629]" />
+            <span className="rounded-full bg-white/80 backdrop-blur-md px-3 py-0.5 text-[11px] font-space font-semibold uppercase tracking-wider text-[#182817] border border-white/90 shadow-xs flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-[#FF5E97]" />
               {activeSub?.brandName || 'Strawberry Blossom Cafe'}
             </span>
             <span className="text-[#677A65] text-[11px] hidden md:inline font-space">
@@ -229,7 +242,7 @@ export const ArchitecturalShowcase: React.FC<ArchitecturalShowcaseProps> = ({
             <button
               type="button"
               onClick={onOpenNewSubmission}
-              className="flex items-center gap-1 rounded-full bg-[#2E5629] hover:bg-[#22421E] text-white px-3 py-0.5 text-[11px] font-bold font-syne shadow-xs transition-all cursor-pointer"
+              className="flex items-center gap-1 rounded-full bg-[#182817] hover:bg-[#253D23] text-white px-3 py-0.5 text-[11px] font-bold font-syne shadow-xs transition-all cursor-pointer"
             >
               <span>+ Upload</span>
             </button>
@@ -237,65 +250,68 @@ export const ArchitecturalShowcase: React.FC<ArchitecturalShowcaseProps> = ({
         </header>
 
         {/* ---------------------------------------------------------------------
-            STAGE CENTER: INNER ARTWORK CARD & EDITORIAL PANEL
-            Properly height-constrained so nothing goes out of the frame
+            STAGE CENTER: 3-COLUMN SHOWCASE (Video on Left, Editorial in Center, Poster Card on Right)
+            Enables user to see BOTH the live video and the poster cards simultaneously
             --------------------------------------------------------------------- */}
-        <div className="relative z-10 flex-1 grid grid-cols-1 md:grid-cols-12 gap-4 lg:gap-6 items-center py-1.5 sm:py-2 min-h-0 overflow-hidden">
+        <div className="relative z-10 flex-1 grid grid-cols-1 md:grid-cols-12 gap-3 lg:gap-4 items-center py-1 sm:py-1.5 min-h-0 overflow-hidden">
           
-          {/* Left Column: Rounded Artwork Poster Card */}
-          <div className="md:col-span-5 lg:col-span-5 flex justify-center items-center h-full min-h-0">
-            <div className="relative h-full w-full max-w-[280px] sm:max-w-[320px] lg:max-w-[350px] max-h-[250px] sm:max-h-[300px] lg:max-h-[350px] rounded-[22px] sm:rounded-[26px] overflow-hidden border border-white/90 shadow-[0_12px_32px_rgba(46,86,41,0.08)] bg-white/80 group flex items-center justify-center p-2">
-              <img
-                key={activeSub?.id || safeIndex}
-                src={getPosterImage(activeSub)}
-                alt={activeSub?.campaignName || 'Showcase'}
-                className="h-full w-full object-contain rounded-[16px] sm:rounded-[20px] filter contrast-[1.02] transition-all duration-500"
+          {/* Column 1 (Left): Live Cafe Film Video on Continuous Loop */}
+          <div className="md:col-span-4 lg:col-span-4 flex flex-col justify-center items-center h-full min-h-0">
+            <div className="flex items-center gap-1.5 mb-1.5 px-2.5 py-0.5 rounded-full bg-white/70 backdrop-blur-md border border-white/90 shadow-2xs text-[10px] font-space font-semibold text-[#182817]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#FF5E97] animate-pulse" />
+              <span>Live Cafe Film (Loop)</span>
+            </div>
+
+            <div className="relative h-full w-full max-w-[270px] sm:max-w-[300px] lg:max-w-[330px] max-h-[220px] sm:max-h-[260px] lg:max-h-[295px] rounded-[22px] sm:rounded-[26px] overflow-hidden border border-white/90 shadow-[0_12px_32px_rgba(255,94,151,0.12),inset_0_1px_2px_rgba(255,255,255,0.95)] bg-white/75 group flex items-center justify-center p-2">
+              <video
+                ref={cafeVideoRef}
+                src="/assets/aistudio/gemini_generated_video_b1c402ce_c5ef3847.mp4"
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="auto"
+                className="h-full w-full object-cover rounded-[16px] sm:rounded-[20px] filter contrast-[1.03] transition-all duration-500 cursor-pointer"
+                onClick={() => {
+                  if (!cafeVideoRef.current) return;
+                  if (cafeVideoRef.current.paused) {
+                    cafeVideoRef.current.play();
+                  } else {
+                    cafeVideoRef.current.pause();
+                  }
+                }}
+                title="Aesthetic Cafe Film Loop (Click to play/pause)"
               />
-
-              {/* Floating Top Arrow Badge in Circular Glass Pill */}
-              <button
-                type="button"
-                onClick={() => activeSub && onOpenScoreReport(activeSub)}
-                className="absolute top-4 left-4 h-8 w-8 rounded-full bg-white/85 hover:bg-white text-[#182817] border border-white backdrop-blur-md flex items-center justify-center shadow-sm transition-all duration-200 hover:scale-105 cursor-pointer"
-                title="View Full Compliance Audit"
-              >
-                <ArrowUpRight className="h-3.5 w-3.5" />
-              </button>
-
-              {/* Discreet Card Label */}
-              <span className="absolute bottom-3.5 right-3.5 rounded-full bg-black/65 backdrop-blur-md px-2 py-0.5 text-[9px] font-space text-white/95">
-                Card {safeIndex + 1} of {activeSubmissions.length}
-              </span>
             </div>
           </div>
 
-          {/* Right Column: Clean Editorial Content & Actions */}
-          <div className="md:col-span-7 lg:col-span-7 flex flex-col justify-center space-y-2 sm:space-y-2.5 text-left min-h-0">
+          {/* Column 2 (Center): Clean Editorial Content, 85% Score Gate & Actions */}
+          <div className="md:col-span-4 lg:col-span-4 flex flex-col justify-center space-y-1.5 sm:space-y-2 text-left min-h-0 px-1 sm:px-2">
             {/* Tagline */}
-            <div className="inline-flex items-center gap-1 rounded-full bg-white/75 backdrop-blur-md px-2.5 py-0.5 text-[10px] font-space font-semibold uppercase tracking-wider text-[#2E5629] border border-white/90 shadow-xs w-fit">
+            <div className="inline-flex items-center gap-1 rounded-full bg-white/75 backdrop-blur-md px-2.5 py-0.5 text-[10px] font-space font-semibold uppercase tracking-wider text-[#182817] border border-white/90 shadow-xs w-fit">
               <Sparkles className="h-2.5 w-2.5 text-[#FF5E97]" />
-              <span>Vision Compliance &bull; 85% Approval Gate</span>
+              <span>Vision Compliance &bull; 85% Gate</span>
             </div>
 
-            {/* Main Headline (Scaled to 2-3 lines max) */}
-            <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold font-serif tracking-tight text-[#182817] leading-tight line-clamp-2">
+            {/* Main Headline */}
+            <h1 className="text-base sm:text-lg lg:text-xl font-extrabold font-serif tracking-tight text-[#182817] leading-snug line-clamp-2">
               {activeSub?.campaignName || 'Strawberry Matcha Signature Cafe'}
             </h1>
 
             {/* Description Body */}
-            <p className="text-xs sm:text-xs font-sans text-[#526350] leading-relaxed line-clamp-2 max-w-lg">
+            <p className="text-[11px] sm:text-xs font-sans text-[#526350] leading-relaxed line-clamp-2">
               {activeSub?.description ||
                 'Automated multimodal evaluation verifying logo safe margin, typography hierarchy, Pantone color alignment, and contact information compliance in under 2.4s.'}
             </p>
 
-            {/* Creator Attribution (No photo fixture, clean typography) */}
+            {/* Creator Attribution */}
             <p className="text-[10px] font-space text-[#7A8E78] italic">
               - created by {activeSub?.userName || 'Chetana Mayaza'} -
             </p>
 
             {/* Gate Score & Supervisor Status Card */}
-            <div className="flex items-center gap-3 p-2.5 rounded-xl bg-white/70 border border-white/90 shadow-xs max-w-md">
-              <span className="text-2xl font-black font-syne text-[#182817]">
+            <div className="flex items-center gap-2.5 p-2 rounded-xl bg-white/70 border border-white/90 shadow-xs">
+              <span className="text-xl font-black font-syne text-[#182817]">
                 {activeSub?.overallAiScore || 93}%
               </span>
               <div className="flex flex-col">
@@ -308,47 +324,76 @@ export const ArchitecturalShowcase: React.FC<ArchitecturalShowcaseProps> = ({
                 >
                   {isGatePassed ? 'Passed AI Gate (≥85%)' : 'Needs Rework (<85%)'}
                 </span>
-                <span className="text-[10px] text-[#677A65] font-sans mt-0.5">
+                <span className="text-[10px] text-[#677A65] font-sans mt-0.5 line-clamp-1">
                   {isGatePassed
-                    ? 'Verified against brand guidelines for Elena Rostova sign-off'
-                    : 'Requires creator correction before campaign publishing'}
+                    ? 'Verified for Elena Rostova sign-off'
+                    : 'Requires creator correction'}
                 </span>
               </div>
             </div>
 
             {/* Glass Pill Actions (Explore / Watch Demo / Share) */}
-            <div className="flex flex-wrap items-center gap-2 pt-0.5">
-              {/* Explore Audit Button */}
+            <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
               <button
                 type="button"
                 onClick={() => activeSub && onOpenScoreReport(activeSub)}
-                className="flex items-center gap-1.5 rounded-full bg-[#182817] hover:bg-[#253D23] text-white px-4 py-1.5 text-xs font-bold font-syne shadow-sm transition-all cursor-pointer"
+                className="flex items-center gap-1 rounded-full bg-[#182817] hover:bg-[#253D23] text-white px-3 py-1.5 text-xs font-bold font-syne shadow-sm transition-all cursor-pointer"
               >
                 <span>Explore Audit</span>
                 <ChevronRight className="h-3 w-3" />
               </button>
 
-              {/* Watch Demo Button */}
               {onOpenDemo && (
                 <button
                   type="button"
                   onClick={onOpenDemo}
-                  className="flex items-center gap-1.5 rounded-full bg-[#FFF0F5] hover:bg-[#FFE4ED] text-[#D82666] px-3.5 py-1.5 text-xs font-bold font-syne border border-[#FFD0E0] shadow-xs transition-all cursor-pointer"
+                  className="flex items-center gap-1 rounded-full bg-[#FFF0F5] hover:bg-[#FFE4ED] text-[#D82666] px-3 py-1.5 text-xs font-bold font-syne border border-[#FFD0E0] shadow-xs transition-all cursor-pointer"
                 >
                   <Play className="h-3 w-3 fill-current" />
                   <span>Watch Demo</span>
                 </button>
               )}
 
-              {/* Share Button */}
               <button
                 type="button"
                 onClick={handleShareClick}
                 className="h-7 w-7 rounded-full bg-white/80 hover:bg-white text-[#182817] border border-white/90 shadow-xs flex items-center justify-center transition cursor-pointer"
                 title="Copy share link"
               >
-                <Share2 className="h-3 w-3" />
+                {isCopiedShare ? <Check className="h-3 w-3 text-emerald-600" /> : <Share2 className="h-3 w-3" />}
               </button>
+            </div>
+          </div>
+
+          {/* Column 3 (Right): Creative Poster Card / Postcard Display */}
+          <div className="md:col-span-4 lg:col-span-4 flex flex-col justify-center items-center h-full min-h-0">
+            <div className="flex items-center justify-between w-full max-w-[260px] sm:max-w-[290px] lg:max-w-[320px] mb-1.5 px-3 py-0.5 rounded-full bg-white/70 backdrop-blur-md border border-white/90 shadow-2xs text-[10px] font-space font-semibold text-[#182817]">
+              <span className="truncate max-w-[170px]">{activeSub?.campaignName || 'Poster Postcard'}</span>
+              <span className="text-[#FF5E97] font-bold shrink-0">Card {safeIndex + 1} of {activeSubmissions.length}</span>
+            </div>
+
+            <div className="relative h-full w-full max-w-[260px] sm:max-w-[290px] lg:max-w-[320px] max-h-[220px] sm:max-h-[260px] lg:max-h-[295px] rounded-[22px] sm:rounded-[26px] overflow-hidden border border-white/90 shadow-[0_12px_32px_rgba(255,94,151,0.12),inset_0_1px_2px_rgba(255,255,255,0.95)] bg-white/75 group flex items-center justify-center p-2">
+              <img
+                key={activeSub?.id || safeIndex}
+                src={getPosterImage(activeSub)}
+                alt={activeSub?.campaignName || 'Showcase'}
+                className="h-full w-full object-contain rounded-[16px] sm:rounded-[20px] filter contrast-[1.02] transition-all duration-500"
+              />
+
+              {/* Floating Top Arrow Badge in Circular Glass Pill */}
+              <button
+                type="button"
+                onClick={() => activeSub && onOpenScoreReport(activeSub)}
+                className="absolute top-3.5 left-3.5 h-7 w-7 rounded-full bg-white/85 hover:bg-white text-[#182817] border border-white backdrop-blur-md flex items-center justify-center shadow-xs transition-all duration-200 hover:scale-105 cursor-pointer z-10"
+                title="View Full Compliance Audit"
+              >
+                <ArrowUpRight className="h-3.5 w-3.5" />
+              </button>
+
+              {/* Discreet Card Label */}
+              <span className="absolute bottom-3 right-3 rounded-full bg-black/65 backdrop-blur-md px-2 py-0.5 text-[9px] font-space text-white/95 z-10">
+                Postcard {safeIndex + 1}
+              </span>
             </div>
           </div>
         </div>
@@ -376,7 +421,7 @@ export const ArchitecturalShowcase: React.FC<ArchitecturalShowcaseProps> = ({
             >
               <span>{safeIndex + 1} of {activeSubmissions.length}</span>
               {isAutoPlaying && !isFixedCard ? (
-                <span className="h-1.5 w-1.5 rounded-full bg-[#2E5629] animate-pulse" />
+                <span className="h-1.5 w-1.5 rounded-full bg-[#FF5E97] animate-pulse" />
               ) : (
                 <Pause className="h-2 w-2 text-[#7A8E78]" />
               )}
@@ -414,7 +459,7 @@ export const ArchitecturalShowcase: React.FC<ArchitecturalShowcaseProps> = ({
             <button
               type="button"
               onClick={() => onSwitchToWorkspace('creatives')}
-              className="text-[11px] font-bold font-syne text-[#2E5629] hover:underline cursor-pointer flex items-center gap-1"
+              className="text-[11px] font-bold font-syne text-[#FF5E97] hover:underline cursor-pointer flex items-center gap-1"
             >
               <span>My Posters</span>
               <span>&rarr;</span>
