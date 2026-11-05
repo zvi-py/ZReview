@@ -11,7 +11,7 @@ interface ZReviewVideoDemoModalProps {
 // Extended high-definition videos: 31 seconds for platform walkthrough, 20 seconds for cafe film
 export const DEMO_VIDEOS = {
   platform: '/assets/aistudio/zreview_extended_walkthrough.mp4',
-  cafe: '/assets/aistudio/gemini_generated_video_b1c402ce_c5ef3847.mp4',
+  cafe: '/assets/aistudio/gemini_generated_video_ae3562fe.mp4',
 };
 
 const PLATFORM_TOUR_STEPS = [
@@ -82,19 +82,40 @@ export const ZReviewVideoDemoModal: React.FC<ZReviewVideoDemoModalProps> = ({
   const activeSteps = activeVideo === 'platform' ? PLATFORM_TOUR_STEPS : CAFE_TOUR_STEPS;
   const currentStep = activeSteps[currentStepIndex] || activeSteps[0];
 
-  // Stop speech synthesis & audio on unmount or close
+  // Stop speech synthesis & audio immediately on unmount or close
   const stopAllAudio = () => {
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-    }
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-    }
     if (stepTimerRef.current) {
       clearTimeout(stepTimerRef.current);
       stepTimerRef.current = null;
     }
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      try {
+        window.speechSynthesis.cancel();
+      } catch {}
+      // Immediate and microtask cancel to clear pending speech queue in all browsers
+      setTimeout(() => {
+        try {
+          window.speechSynthesis.cancel();
+        } catch {}
+      }, 30);
+    }
+    if (videoRef.current) {
+      try {
+        videoRef.current.pause();
+        videoRef.current.muted = true;
+      } catch {}
+    }
+    if (audioRef.current) {
+      try {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      } catch {}
+    }
+  };
+
+  const handleExit = () => {
+    stopAllAudio();
+    onClose();
   };
 
   // Track native fullscreen changes
@@ -130,8 +151,7 @@ export const ZReviewVideoDemoModal: React.FC<ZReviewVideoDemoModalProps> = ({
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && !document.fullscreenElement) {
-        stopAllAudio();
-        onClose();
+        handleExit();
       }
     };
 
@@ -142,7 +162,7 @@ export const ZReviewVideoDemoModal: React.FC<ZReviewVideoDemoModalProps> = ({
     };
   }, [isOpen, onClose]);
 
-  // Autoplay video immediately on open with 5% decreased playback speed (0.95x)
+  // Autoplay video immediately on open with 0.95x speed
   useEffect(() => {
     if (!isOpen) {
       stopAllAudio();
@@ -154,6 +174,9 @@ export const ZReviewVideoDemoModal: React.FC<ZReviewVideoDemoModalProps> = ({
       try {
         videoRef.current.currentTime = 0;
         videoRef.current.playbackRate = 0.95;
+        // In platform walkthrough mode, video must be muted so only voice explanation is heard
+        // In cafe mode, video is unmuted if isAudioEnabled is true
+        videoRef.current.muted = activeVideo === 'platform' || !isAudioEnabled;
         await videoRef.current.play();
       } catch {
         if (videoRef.current) {
@@ -164,21 +187,22 @@ export const ZReviewVideoDemoModal: React.FC<ZReviewVideoDemoModalProps> = ({
       }
     };
 
-    const timer = setTimeout(startPlayback, 50);
+    const timer = setTimeout(startPlayback, 60);
     return () => clearTimeout(timer);
-  }, [isOpen, activeVideo]);
+  }, [isOpen, activeVideo, isAudioEnabled]);
 
-  // Play narration track for current video
+  // Play narration track for current video - exclusively in platform mode, never overlapping
   const playNarrationSequence = (startIndex = 0) => {
     stopAllAudio();
-    if (!isAudioEnabled || !isOpen) return;
+    // Only speak explanation in platform demo mode; cafe film plays its own video audio
+    if (!isAudioEnabled || !isOpen || activeVideo !== 'platform') return;
 
     let index = startIndex;
     setCurrentStepIndex(index);
 
     const speakStep = (idx: number) => {
-      if (!isOpen || !isAudioEnabled) return;
-      const step = activeSteps[idx];
+      if (!isOpen || !isAudioEnabled || activeVideo !== 'platform') return;
+      const step = PLATFORM_TOUR_STEPS[idx];
       if (!step) {
         // Loop narration after brief pause
         stepTimerRef.current = setTimeout(() => {
@@ -191,80 +215,86 @@ export const ZReviewVideoDemoModal: React.FC<ZReviewVideoDemoModalProps> = ({
 
       if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
         window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(step.text);
-        utterance.rate = 0.95; // 5% slower for crystal clear explanation
-        utterance.pitch = 1.0;
 
-        // Pick best natural voice if available
-        const voices = window.speechSynthesis.getVoices();
-        const englishVoice =
-          voices.find((v) => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha') || v.name.includes('Daniel'))) ||
-          voices.find((v) => v.lang.startsWith('en'));
-        if (englishVoice) {
-          utterance.voice = englishVoice;
-        }
+        // Brief delay after cancel to prevent instant browser utterance cancellation
+        stepTimerRef.current = setTimeout(() => {
+          if (!isOpen || !isAudioEnabled || activeVideo !== 'platform') return;
 
-        utterance.onend = () => {
-          stepTimerRef.current = setTimeout(() => {
-            speakStep((idx + 1) % activeSteps.length);
-          }, 800);
-        };
+          const utterance = new SpeechSynthesisUtterance(step.text);
+          utterance.rate = 0.95; // 5% slower for crystal clear explanation
+          utterance.pitch = 1.0;
 
-        utterance.onerror = () => {
-          stepTimerRef.current = setTimeout(() => {
-            speakStep((idx + 1) % activeSteps.length);
-          }, step.durationMs);
-        };
+          // Pick best natural voice if available
+          const voices = window.speechSynthesis.getVoices();
+          const englishVoice =
+            voices.find(
+              (v) =>
+                v.lang.startsWith('en') &&
+                (v.name.includes('Natural') ||
+                  v.name.includes('Google') ||
+                  v.name.includes('Samantha') ||
+                  v.name.includes('Daniel') ||
+                  v.name.includes('Ava'))
+            ) || voices.find((v) => v.lang.startsWith('en'));
 
-        window.speechSynthesis.speak(utterance);
+          if (englishVoice) {
+            utterance.voice = englishVoice;
+          }
+
+          utterance.onend = () => {
+            stepTimerRef.current = setTimeout(() => {
+              speakStep((idx + 1) % PLATFORM_TOUR_STEPS.length);
+            }, 800);
+          };
+
+          utterance.onerror = () => {
+            stepTimerRef.current = setTimeout(() => {
+              speakStep((idx + 1) % PLATFORM_TOUR_STEPS.length);
+            }, step.durationMs);
+          };
+
+          window.speechSynthesis.speak(utterance);
+        }, 40);
       } else {
         stepTimerRef.current = setTimeout(() => {
-          speakStep((idx + 1) % activeSteps.length);
+          speakStep((idx + 1) % PLATFORM_TOUR_STEPS.length);
         }, step.durationMs);
       }
     };
 
-    // Small delay so video starts first
+    // Small delay so video starts smoothly first
     stepTimerRef.current = setTimeout(() => {
       speakStep(index);
-    }, 400);
+    }, 450);
   };
 
-  // Try fetching Gemini TTS audio from server, fallback seamlessly to speech synthesis
+  // Single-Audio Master Orchestration:
+  // - Platform mode: video muted, only narration voice speaks
+  // - Cafe mode: video unmuted (if audio enabled), narration completely stopped
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {
+      stopAllAudio();
+      return;
+    }
 
-    let isMounted = true;
-    fetch('/api/demo/narrative-audio')
-      .then((res) => res.json())
-      .then((data) => {
-        if (!isMounted) return;
-        if (data.audioBase64 && isAudioEnabled) {
-          try {
-            const audioBlob = new Blob([Uint8Array.from(atob(data.audioBase64), (c) => c.charCodeAt(0))], {
-              type: data.mimeType || 'audio/wav',
-            });
-            const audioUrl = URL.createObjectURL(audioBlob);
-            if (audioRef.current) {
-              audioRef.current.src = audioUrl;
-              audioRef.current.play().catch(() => {
-                playNarrationSequence(0);
-              });
-              return;
-            }
-          } catch {
-            playNarrationSequence(0);
-          }
-        } else {
-          playNarrationSequence(0);
-        }
-      })
-      .catch(() => {
-        if (isMounted) playNarrationSequence(0);
-      });
+    if (activeVideo === 'platform') {
+      if (videoRef.current) {
+        videoRef.current.muted = true;
+      }
+      if (isAudioEnabled) {
+        playNarrationSequence(0);
+      } else {
+        stopAllAudio();
+      }
+    } else {
+      // Cafe Film: stop any speech synthesis; video plays its own native audio track
+      stopAllAudio();
+      if (videoRef.current) {
+        videoRef.current.muted = !isAudioEnabled;
+      }
+    }
 
     return () => {
-      isMounted = false;
       stopAllAudio();
     };
   }, [isOpen, activeVideo, isAudioEnabled]);
@@ -290,13 +320,16 @@ export const ZReviewVideoDemoModal: React.FC<ZReviewVideoDemoModalProps> = ({
         autoPlay
         loop
         playsInline
+        muted={activeVideo === 'platform' || !isAudioEnabled}
         controls={false}
         onDoubleClick={toggleNativeFullscreen}
         onClick={() => {
           if (!videoRef.current) return;
           if (videoRef.current.paused) {
             videoRef.current.play();
-            if (isAudioEnabled) playNarrationSequence(currentStepIndex);
+            if (isAudioEnabled && activeVideo === 'platform') {
+              playNarrationSequence(currentStepIndex);
+            }
           } else {
             videoRef.current.pause();
             stopAllAudio();
@@ -339,16 +372,23 @@ export const ZReviewVideoDemoModal: React.FC<ZReviewVideoDemoModalProps> = ({
             <span className="text-[10px] font-mono px-1 py-0.2 rounded bg-black/30 text-white/90">20s</span>
           </button>
 
-          {/* Voiceover Narration Toggle */}
+          {/* Single Audio Master Toggle */}
           <button
             type="button"
             onClick={() => {
               if (isAudioEnabled) {
                 stopAllAudio();
                 setIsAudioEnabled(false);
+                if (videoRef.current) videoRef.current.muted = true;
               } else {
                 setIsAudioEnabled(true);
-                playNarrationSequence(0);
+                if (activeVideo === 'platform') {
+                  if (videoRef.current) videoRef.current.muted = true;
+                  playNarrationSequence(0);
+                } else {
+                  stopAllAudio();
+                  if (videoRef.current) videoRef.current.muted = false;
+                }
               }
             }}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer border ${
@@ -447,10 +487,7 @@ export const ZReviewVideoDemoModal: React.FC<ZReviewVideoDemoModalProps> = ({
           {/* Exit Button */}
           <button
             type="button"
-            onClick={() => {
-              stopAllAudio();
-              onClose();
-            }}
+            onClick={handleExit}
             className="flex items-center gap-2 rounded-full bg-black/75 hover:bg-[#FF5E97] text-white border border-white/20 hover:border-[#FF5E97] px-4 py-2.5 text-xs font-bold font-syne transition-all duration-200 cursor-pointer shadow-2xl backdrop-blur-md group shrink-0"
             title="Exit Demo (ESC)"
           >

@@ -93,9 +93,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {/* Header */}
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div className="flex items-center gap-2.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/90 backdrop-blur-md shadow-xs ring-1 ring-[#FFD0E0]/80 p-0.5">
-                <BrandLogo size={24} />
-              </div>
+              <BrandLogo size={30} className="drop-shadow-sm select-none" />
               <span className="font-extrabold font-syne text-slate-900 tracking-tight text-base">
                 ZReview Navigation
               </span>

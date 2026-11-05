@@ -24,6 +24,7 @@ interface ArchitecturalShowcaseProps {
   onOpenArchitectureModal: () => void;
   onSwitchToWorkspace: (tab?: string) => void;
   onOpenDemo?: () => void;
+  isDemoOpen?: boolean;
 }
 
 export const GEMINI_VIDEO_PROMPT = `Cinematic photorealistic 4K video of a modern aesthetic cafe beverage and poster showcase. The hero subject is an artisanal Strawberry Matcha iced latte in a fluted textured glass tumbler: vivid emerald green ceremonial Japanese Uji matcha layer at the bottom, crisp whole milk and crystalline ice cubes in the middle, topped with a luscious, thick pastel strawberry cold foam cascading gently over the glass rim. Soft morning sunlight filters through cafe window glass onto warm oat and ivory cream surfaces. The camera performs a smooth, graceful slow-motion macro pan (0.95x speed, 60fps), capturing the swirling textures of rich chocolate iced coffee, golden espresso crema, dripping waffle cone gelato, and delicate pink raspberry macarons. Behind the glass, soft 3D light-pink circular rings float and drift with subtle ambient depth and gentle reflections. Color palette: Ceremonial Matcha Green (#2E5629), Soft Strawberry Blossom Pink (#FF5E97), Warm Ivory Cream (#FAF7EE). Hyper-detailed 8K textures, shallow depth of field (f/1.8), elegant minimalist editorial luxury aesthetic, studio lighting, zero glitches, zero distortion.`;
@@ -35,6 +36,7 @@ export const ArchitecturalShowcase: React.FC<ArchitecturalShowcaseProps> = ({
   onOpenNewSubmission,
   onSwitchToWorkspace,
   onOpenDemo,
+  isDemoOpen = false,
 }) => {
   const { currentUser } = useAuth();
 
@@ -45,17 +47,41 @@ export const ArchitecturalShowcase: React.FC<ArchitecturalShowcaseProps> = ({
   const [isCopiedPrompt, setIsCopiedPrompt] = useState(false);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [isFixedCard, setIsFixedCard] = useState(false);
-
-  // Main page video loop ref (continuous high-definition video playing on loop at 0.95x speed)
+  // Main page video loop ref (continuous high-definition video playing on loop at 0.95x speed, strictly muted outside demo)
   const cafeVideoRef = React.useRef<HTMLVideoElement>(null);
 
-  // Ensure cafe video autoplays on loop with 0.95x playback rate (5% decreased speed)
+  // Ensure cafe video autoplays on loop with 0.95x playback rate (always muted on main page)
   useEffect(() => {
     if (cafeVideoRef.current) {
       cafeVideoRef.current.playbackRate = 0.95;
+      cafeVideoRef.current.muted = true;
       cafeVideoRef.current.play().catch(() => {});
     }
   }, []);
+
+  // When demo modal opens, pause showcase video; when demo closes, resume muted
+  useEffect(() => {
+    if (isDemoOpen) {
+      if (cafeVideoRef.current) {
+        cafeVideoRef.current.muted = true;
+        cafeVideoRef.current.pause();
+      }
+    } else if (cafeVideoRef.current) {
+      cafeVideoRef.current.muted = true;
+      cafeVideoRef.current.play().catch(() => {});
+    }
+  }, [isDemoOpen]);
+
+  const handleOpenDemoSafe = () => {
+    if (cafeVideoRef.current) {
+      cafeVideoRef.current.muted = true;
+      cafeVideoRef.current.pause();
+    }
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+    onOpenDemo?.();
+  };
 
   // Filtered submissions
   const activeSubmissions = submissions.filter((s) => {
@@ -257,21 +283,15 @@ export const ArchitecturalShowcase: React.FC<ArchitecturalShowcaseProps> = ({
           
           {/* Column 1 (Left): Live Cafe Film Video on Continuous Loop */}
           <div className="md:col-span-4 lg:col-span-4 flex flex-col justify-center items-center h-full min-h-0">
-            <div className="flex items-center gap-1.5 mb-1.5 px-2.5 py-0.5 rounded-full bg-white/70 backdrop-blur-md border border-white/90 shadow-2xs text-[10px] font-space font-semibold text-[#182817]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#FF5E97] animate-pulse" />
-              <span>Live Cafe Film (Loop)</span>
-            </div>
-
             <div className="relative h-full w-full max-w-[270px] sm:max-w-[300px] lg:max-w-[330px] max-h-[220px] sm:max-h-[260px] lg:max-h-[295px] rounded-[22px] sm:rounded-[26px] overflow-hidden border border-white/90 shadow-[0_12px_32px_rgba(255,94,151,0.12),inset_0_1px_2px_rgba(255,255,255,0.95)] bg-white/75 group flex items-center justify-center p-2">
               <video
                 ref={cafeVideoRef}
-                src="/assets/aistudio/gemini_generated_video_b1c402ce_c5ef3847.mp4"
                 autoPlay
                 loop
                 muted
                 playsInline
                 preload="auto"
-                className="h-full w-full object-cover rounded-[16px] sm:rounded-[20px] filter contrast-[1.03] transition-all duration-500 cursor-pointer"
+                className="h-full w-full object-cover rounded-[16px] sm:rounded-[20px] filter contrast-[1.03] transition-all duration-500 cursor-pointer shadow-inner"
                 onClick={() => {
                   if (!cafeVideoRef.current) return;
                   if (cafeVideoRef.current.paused) {
@@ -281,7 +301,11 @@ export const ArchitecturalShowcase: React.FC<ArchitecturalShowcaseProps> = ({
                   }
                 }}
                 title="Aesthetic Cafe Film Loop (Click to play/pause)"
-              />
+              >
+                <source src="/assets/aistudio/gemini_generated_video_ae3562fe.mp4" type="video/mp4" />
+                <source src="/assets/aistudio/gemini_generated_video_ae3562fe_c175d25a.mp4" type="video/mp4" />
+                <source src="/assets/aistudio/gemini_generated_video_b1c402ce_c5ef3847.mp4" type="video/mp4" />
+              </video>
             </div>
           </div>
 
@@ -346,7 +370,7 @@ export const ArchitecturalShowcase: React.FC<ArchitecturalShowcaseProps> = ({
               {onOpenDemo && (
                 <button
                   type="button"
-                  onClick={onOpenDemo}
+                  onClick={handleOpenDemoSafe}
                   className="flex items-center gap-1 rounded-full bg-[#FFF0F5] hover:bg-[#FFE4ED] text-[#D82666] px-3 py-1.5 text-xs font-bold font-syne border border-[#FFD0E0] shadow-xs transition-all cursor-pointer"
                 >
                   <Play className="h-3 w-3 fill-current" />

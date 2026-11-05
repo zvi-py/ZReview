@@ -21,7 +21,6 @@ import { ClientReviewPortal } from './components/ClientReviewPortal';
 import { ResumeShowcaseModal } from './components/ResumeShowcaseModal';
 import { ArchitecturalShowcase } from './components/ArchitecturalShowcase';
 import { ZReviewVideoDemoModal } from './components/ZReviewVideoDemoModal';
-import { LoginPage } from './components/LoginPage';
 import { Loader2 } from 'lucide-react';
 
 function ZMain() {
@@ -178,11 +177,6 @@ function ZMain() {
     );
   }
 
-  // If user is not authenticated, render Login Page
-  if (!currentUser) {
-    return <LoginPage onSuccess={() => loadInitialData()} />;
-  }
-
   return (
     <div className="min-h-screen bg-white text-slate-900 flex flex-col font-sans antialiased">
       {/* Top Application Header */}
@@ -216,6 +210,7 @@ function ZMain() {
               onOpenNewSubmission={() => setIsNewSubmissionOpen(true)}
               onOpenArchitectureModal={() => setIsResumeShowcaseOpen(true)}
               onOpenDemo={() => setIsDemoOpen(true)}
+              isDemoOpen={isDemoOpen}
               onSwitchToWorkspace={(tab) => {
                 if (tab) setActiveTab(tab);
                 else if (currentRole === 'ADMIN') setActiveTab('submissions');
@@ -391,8 +386,20 @@ function ZMain() {
       {/* MODAL 7: ZReview Interactive Product Tour & System Video Demo */}
       <ZReviewVideoDemoModal
         isOpen={isDemoOpen}
-        onClose={() => setIsDemoOpen(false)}
+        onClose={() => {
+          if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+            try {
+              window.speechSynthesis.cancel();
+            } catch {}
+          }
+          setIsDemoOpen(false);
+        }}
         onOpenNewSubmission={() => {
+          if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+            try {
+              window.speechSynthesis.cancel();
+            } catch {}
+          }
           setIsDemoOpen(false);
           setIsNewSubmissionOpen(true);
         }}

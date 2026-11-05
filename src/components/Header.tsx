@@ -74,10 +74,9 @@ export const Header: React.FC<HeaderProps> = ({
           type="button"
           onClick={() => setActiveTab('showcase')}
           className="flex items-center gap-2.5 cursor-pointer group text-left shrink-0"
+          title="ZReview Vision Compliance"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/90 backdrop-blur-md shadow-xs ring-1 ring-[#FFD0E0]/80 p-0.5">
-            <BrandLogo size={28} />
-          </div>
+          <BrandLogo size={36} className="group-hover:scale-105 transition-transform drop-shadow-sm select-none" />
           <div>
             <div className="flex items-center gap-2">
               <span className="font-extrabold tracking-tight text-[#182817] text-base font-syne leading-none">
@@ -121,7 +120,12 @@ export const Header: React.FC<HeaderProps> = ({
         {onOpenDemo && (
           <button
             type="button"
-            onClick={onOpenDemo}
+            onClick={() => {
+              if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+              }
+              onOpenDemo();
+            }}
             className="inline-flex items-center gap-1.5 rounded-lg bg-[#FFF0F5] hover:bg-[#FFE4ED] border border-[#FFD0E0] px-3 py-1.5 text-xs font-bold text-[#D82666] transition-colors cursor-pointer shadow-2xs"
             title="Watch ZReview Interactive Video Tour"
           >

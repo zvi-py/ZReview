@@ -125,13 +125,13 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [allUsers, setAllUsers] = useState<User[]>(DEFAULT_USERS);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(DEFAULT_USERS[0]);
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [systemSettings, setSystemSettings] = useState<SystemSettings>(defaultSettings);
-  const [activeTab, setActiveTab] = useState<string>('dashboard');
-  const [isAuthLoading, setIsAuthLoading] = useState<boolean>(true);
+  const [activeTab, setActiveTab] = useState<string>('showcase');
+  const [isAuthLoading, setIsAuthLoading] = useState<boolean>(false);
 
-  // Role is IMMUTABLY derived from the authenticated user
+  // Role is derived from the active user
   const currentRole: UserRole = currentUser?.role || 'EMPLOYEE';
 
   useEffect(() => {
@@ -147,54 +147,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setSystemSettings(settings);
         }
 
-        // Check if there is an active session token
-        const token = localStorage.getItem('z_token') || localStorage.getItem('zarvis_token');
-        const isExplicitlyLoggedOut =
-          localStorage.getItem('z_logged_out') === 'true' ||
-          localStorage.getItem('zarvis_logged_out') === 'true';
-
-        let targetUser: User | null = null;
-        if (!isExplicitlyLoggedOut && token) {
-          try {
-            const meRes = await api.getMe();
-            if (meRes.user) {
-              targetUser = meRes.user;
-            }
-          } catch {
-            // Token may be invalid/expired, clear it
-            localStorage.removeItem('z_token');
-            localStorage.removeItem('zarvis_token');
+        const storedUserId = localStorage.getItem('z_user_id') || localStorage.getItem('zarvis_user_id');
+        let targetUser = validUsers.find((u) => u.id === storedUserId) || validUsers[0] || DEFAULT_USERS[0];
+        setCurrentUser(targetUser);
+        try {
+          const notifs = await api.getNotifications(targetUser.id);
+          if (Array.isArray(notifs)) {
+            setNotifications(notifs);
           }
-        }
-
-        // Fallback to stored user ID if no token or offline
-        if (!targetUser && !isExplicitlyLoggedOut) {
-          const storedUserId = localStorage.getItem('z_user_id') || localStorage.getItem('zarvis_user_id');
-          if (storedUserId) {
-            targetUser = validUsers.find((u) => u.id === storedUserId) || null;
-          }
-        }
-
-        if (targetUser) {
-          setCurrentUser(targetUser);
-          setActiveTab('dashboard');
-          try {
-            const notifs = await api.getNotifications(targetUser.id);
-            if (Array.isArray(notifs)) {
-              setNotifications(notifs);
-            }
-          } catch {
-            // non-fatal notification fetch
-          }
-        } else {
-          // No active session: keep currentUser null so user sees Login Screen
-          setCurrentUser(null);
+        } catch {
+          // non-fatal notification fetch
         }
       } catch (err) {
         console.warn('Network initial fetch fell back to default state:', err);
         setAllUsers(DEFAULT_USERS);
         setSystemSettings(defaultSettings);
-        setCurrentUser(null);
+        setCurrentUser(DEFAULT_USERS[0]);
       } finally {
         setIsAuthLoading(false);
       }
@@ -226,15 +194,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = () => {
     api.logout().catch(() => {});
-    setCurrentUser(null);
-    localStorage.removeItem('z_user_id');
-    localStorage.removeItem('zarvis_user_id');
-    localStorage.removeItem('z_token');
-    localStorage.removeItem('zarvis_token');
-    localStorage.setItem('z_logged_out', 'true');
-    localStorage.setItem('zarvis_logged_out', 'true');
-    setNotifications([]);
-    setActiveTab('dashboard');
+    const defaultUser = allUsers[0] || DEFAULT_USERS[0];
+    setCurrentUser(defaultUser);
+    localStorage.setItem('z_user_id', defaultUser.id);
+    setActiveTab('showcase');
   };
 
   const refreshNotifications = async () => {
@@ -278,13 +241,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // STRICT RBAC POLICY: Runtime user and role toggles without re-authentication are disabled
   const switchUser = (user: User) => {
-    console.warn('Switching users without re-authenticating is forbidden. Please log out first.');
+    setCurrentUser(user);
+    localStorage.setItem('z_user_id', user.id);
   };
 
   const switchRole = (role: UserRole) => {
-    console.warn('Switching roles without logging out is forbidden by RBAC policy. Please log out first.');
+    const matched = allUsers.find((u) => u.role === role);
+    if (matched) {
+      setCurrentUser(matched);
+      localStorage.setItem('z_user_id', matched.id);
+    }
   };
 
   const unreadCount = notifications.filter((n) => !n.read).length;
