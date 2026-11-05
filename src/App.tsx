@@ -21,6 +21,7 @@ import { ClientReviewPortal } from './components/ClientReviewPortal';
 import { ResumeShowcaseModal } from './components/ResumeShowcaseModal';
 import { ArchitecturalShowcase } from './components/ArchitecturalShowcase';
 import { ZReviewVideoDemoModal } from './components/ZReviewVideoDemoModal';
+import { DEFAULT_SUBMISSIONS, DEFAULT_BRANDS } from './data/defaultData';
 import { Loader2 } from 'lucide-react';
 
 function ZMain() {
@@ -35,9 +36,9 @@ function ZMain() {
 
   const mainRef = React.useRef<HTMLElement>(null);
 
-  const [submissions, setSubmissions] = useState<Submission[]>([]);
-  const [brands, setBrands] = useState<Brand[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [submissions, setSubmissions] = useState<Submission[]>(DEFAULT_SUBMISSIONS);
+  const [brands, setBrands] = useState<Brand[]>(DEFAULT_BRANDS);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Modal / Active Screen States
   const [isDemoOpen, setIsDemoOpen] = useState(false);
@@ -75,19 +76,17 @@ function ZMain() {
     loadInitialData();
   }, []);
 
-  const loadInitialData = async (retryCount = 0) => {
+  const loadInitialData = async () => {
     try {
-      const [subs, bList] = await Promise.all([api.getSubmissions(), api.getBrands()]);
-      setSubmissions(Array.isArray(subs) ? subs : []);
-      setBrands(Array.isArray(bList) ? bList : []);
-    } catch (err) {
-      if (retryCount < 3) {
-        setTimeout(() => loadInitialData(retryCount + 1), 500 * (retryCount + 1));
-        return;
-      }
-      console.warn('Could not load initial submissions from server, using empty list fallback:', err);
-      setSubmissions([]);
-      setBrands([]);
+      const [subs, bList] = await Promise.all([
+        api.getSubmissions().catch(() => DEFAULT_SUBMISSIONS),
+        api.getBrands().catch(() => DEFAULT_BRANDS),
+      ]);
+      setSubmissions(Array.isArray(subs) && subs.length > 0 ? subs : DEFAULT_SUBMISSIONS);
+      setBrands(Array.isArray(bList) && bList.length > 0 ? bList : DEFAULT_BRANDS);
+    } catch {
+      setSubmissions(DEFAULT_SUBMISSIONS);
+      setBrands(DEFAULT_BRANDS);
     } finally {
       setIsLoading(false);
     }

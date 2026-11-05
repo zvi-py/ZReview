@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Submission, Brand } from '../types';
+import { DEFAULT_SUBMISSIONS } from '../data/defaultData';
 import { useAuth } from '../context/AuthContext';
 import { Floating3DBackground } from './Floating3DBackground';
 import {
@@ -46,7 +47,6 @@ export const ArchitecturalShowcase: React.FC<ArchitecturalShowcaseProps> = ({
   const [isCopiedShare, setIsCopiedShare] = useState(false);
   const [isCopiedPrompt, setIsCopiedPrompt] = useState(false);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-  const [isFixedCard, setIsFixedCard] = useState(false);
   // Main page video loop ref (continuous high-definition video playing on loop at 0.95x speed, strictly muted outside demo)
   const cafeVideoRef = React.useRef<HTMLVideoElement>(null);
 
@@ -83,8 +83,12 @@ export const ArchitecturalShowcase: React.FC<ArchitecturalShowcaseProps> = ({
     onOpenDemo?.();
   };
 
+  // Guaranteed non-empty base submissions list (safe across static deployments like Vercel)
+  const baseSubmissions =
+    Array.isArray(submissions) && submissions.length > 0 ? submissions : DEFAULT_SUBMISSIONS;
+
   // Filtered submissions
-  const activeSubmissions = submissions.filter((s) => {
+  const activeSubmissions = baseSubmissions.filter((s) => {
     if (selectedBrandFilter === 'ALL') return true;
     return s.brandId === selectedBrandFilter;
   });
@@ -93,18 +97,18 @@ export const ArchitecturalShowcase: React.FC<ArchitecturalShowcaseProps> = ({
     activeSubmissions.length > 0
       ? Math.min(currentIndex, activeSubmissions.length - 1)
       : 0;
-  const activeSub = activeSubmissions[safeIndex] || submissions[0] || null;
+  const activeSub = activeSubmissions[safeIndex] || baseSubmissions[0] || null;
 
-  // Auto-change page every 5 seconds (5000ms)
+  // Auto-change page every 5 seconds (5000ms) across all cards
   useEffect(() => {
-    if (!isAutoPlaying || isFixedCard || activeSubmissions.length <= 1) return;
+    if (!isAutoPlaying || activeSubmissions.length <= 1) return;
 
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % activeSubmissions.length);
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [isAutoPlaying, isFixedCard, activeSubmissions.length]);
+  }, [isAutoPlaying, activeSubmissions.length]);
 
   const handleNext = () => {
     if (activeSubmissions.length <= 1) return;
@@ -132,9 +136,19 @@ export const ArchitecturalShowcase: React.FC<ArchitecturalShowcaseProps> = ({
     }
   };
 
-  // Curated coffee, cafe & cute posters
+  // Curated coffee, cafe & cute posters with 100% deterministic asset mapping
   const getPosterImage = (sub: Submission | null): string => {
     if (!sub) return '/assets/aistudio/image_4178a031.png';
+
+    // Direct ID mapping ensures pristine card-to-image matching
+    if (sub.id === 'SUB-101') return '/assets/aistudio/image_b41c8e2c.png'; // Ferrero Rocher Cold Foam Latte
+    if (sub.id === 'SUB-102') return '/assets/aistudio/image_89d665aa.png'; // Noon Coffee - Classic Rich Latte
+    if (sub.id === 'SUB-103') return '/assets/aistudio/image_3cdcff8b.png'; // Matcha Time - Tokyo Iced Latte
+    if (sub.id === 'SUB-104') return '/assets/aistudio/image_4178a031.png'; // Strawberry Matcha Signature
+    if (sub.id === 'SUB-105') return '/assets/aistudio/image_36da4e00.png'; // Wanna Taste!? Blue Cheesecake
+    if (sub.id === 'SUB-106') return '/assets/aistudio/image_2db42f96.png'; // Amor Helado - 2x1 Gelato Promo
+    if (sub.id === 'SUB-107') return '/assets/aistudio/image_3de7b998.png'; // Petite Framboise - Macaron
+    if (sub.id === 'SUB-108') return '/assets/aistudio/image_91ac2035.png'; // The New Ritual - Matcha Revitalizer
 
     const latestVer = sub.versions?.[sub.versions.length - 1];
     const file = latestVer?.files?.[0];
@@ -142,35 +156,15 @@ export const ArchitecturalShowcase: React.FC<ArchitecturalShowcaseProps> = ({
       return file.fileUrl;
     }
 
-    // Direct authentic mappings to user-uploaded cafe & coffee assets
     const name = (sub.campaignName || '').toLowerCase();
-
-    if (name.includes('morning mood') || name.includes('ferrero') || sub.id === 'SUB-101') {
-      return '/assets/aistudio/image_b41c8e2c.png';
-    }
-    if (name.includes('noon coffee') || name.includes('latte') || sub.id === 'SUB-102') {
-      return '/assets/aistudio/image_89d665aa.png';
-    }
-    if (name.includes('matcha time') || name.includes('tokyo') || sub.id === 'SUB-103') {
-      return '/assets/aistudio/image_3cdcff8b.png';
-    }
-    // 4th card: Strawberry Matcha Signature
-    if (name.includes('strawberry') || name.includes('signature') || sub.id === 'SUB-104') {
-      return '/assets/aistudio/image_4178a031.png';
-    }
-    if (name.includes('cheesecake') || name.includes('dobong') || sub.id === 'SUB-105') {
-      return '/assets/aistudio/image_36da4e00.png';
-    }
-    // Dulce Tierra Gelato (Amor Helado)
-    if (name.includes('helado') || name.includes('dulce tierra') || sub.id === 'SUB-106') {
-      return '/assets/aistudio/image_2db42f96.png';
-    }
-    if (name.includes('macaron') || name.includes('framboise') || sub.id === 'SUB-107') {
-      return '/assets/aistudio/image_3de7b998.png';
-    }
-    if (name.includes('revitalizer') || name.includes('ritual') || name.includes('porto') || sub.id === 'SUB-108') {
-      return '/assets/aistudio/image_91ac2035.png';
-    }
+    if (name.includes('morning mood') || name.includes('ferrero')) return '/assets/aistudio/image_b41c8e2c.png';
+    if (name.includes('noon coffee')) return '/assets/aistudio/image_89d665aa.png';
+    if (name.includes('matcha time') || name.includes('tokyo')) return '/assets/aistudio/image_3cdcff8b.png';
+    if (name.includes('strawberry')) return '/assets/aistudio/image_4178a031.png';
+    if (name.includes('cheesecake') || name.includes('dobong')) return '/assets/aistudio/image_36da4e00.png';
+    if (name.includes('helado') || name.includes('gelato') || name.includes('dulce')) return '/assets/aistudio/image_2db42f96.png';
+    if (name.includes('macaron') || name.includes('framboise')) return '/assets/aistudio/image_3de7b998.png';
+    if (name.includes('revitalizer') || name.includes('ritual') || name.includes('porto')) return '/assets/aistudio/image_91ac2035.png';
 
     if (file?.thumbnailUrl) return file.thumbnailUrl;
     if (file?.fileUrl) return file.fileUrl;
@@ -210,20 +204,28 @@ export const ArchitecturalShowcase: React.FC<ArchitecturalShowcaseProps> = ({
           {/* Right Controls: Auto 5s, Brand Filter, Video Prompt & Upload */}
           <div className="flex items-center gap-1.5 sm:gap-2">
             {/* Auto-Rotation 5s Status & Fix/Pin Button */}
+            {/* Auto-Rotation 5s Status & Play/Pause Button */}
             <button
               type="button"
-              onClick={() => setIsFixedCard(!isFixedCard)}
-              className={`flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold backdrop-blur-md border transition cursor-pointer ${
-                isFixedCard
-                  ? 'bg-[#FF5E97]/25 text-[#C92461] border-[#FF5E97]/40 shadow-xs'
-                  : 'bg-white/70 text-[#182817] border-white/90 hover:bg-white shadow-xs'
+              onClick={() => setIsAutoPlaying(!isAutoPlaying)}
+              className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold backdrop-blur-md border transition cursor-pointer ${
+                isAutoPlaying
+                  ? 'bg-white/80 text-[#182817] border-white/95 hover:bg-white shadow-xs'
+                  : 'bg-[#FFF0F5] text-[#C92461] border-[#FFD0E0] shadow-xs'
               }`}
-              title={isFixedCard ? 'Click to resume 5s auto-rotation' : 'Click to fix Card 4 in place'}
+              title={isAutoPlaying ? 'Click to pause 5s auto-change' : 'Click to resume 5s auto-change'}
             >
-              <Pin className={`h-3 w-3 ${isFixedCard ? 'fill-current' : ''}`} />
-              <span className="font-space">
-                {isFixedCard ? 'Fixed: Card ' + (safeIndex + 1) : 'Auto: 5s'}
-              </span>
+              {isAutoPlaying ? (
+                <>
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#FF5E97] animate-pulse" />
+                  <span className="font-space">Auto: 5s</span>
+                </>
+              ) : (
+                <>
+                  <Play className="h-2.5 w-2.5 text-[#C92461] fill-current" />
+                  <span className="font-space">Paused</span>
+                </>
+              )}
             </button>
 
             {/* Video Prompt Copy Button */}
@@ -444,7 +446,7 @@ export const ArchitecturalShowcase: React.FC<ArchitecturalShowcaseProps> = ({
               title={isAutoPlaying ? 'Pause 5s auto-play' : 'Resume 5s auto-play'}
             >
               <span>{safeIndex + 1} of {activeSubmissions.length}</span>
-              {isAutoPlaying && !isFixedCard ? (
+              {isAutoPlaying ? (
                 <span className="h-1.5 w-1.5 rounded-full bg-[#FF5E97] animate-pulse" />
               ) : (
                 <Pause className="h-2 w-2 text-[#7A8E78]" />
